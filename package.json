@@ -1,0 +1,23 @@
+{
+  "name": "lon",
+  "version": "0.0.0",
+  "description": "large object notation",
+  "main": "dist/lon.js",
+  "scripts": {
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "lon",
+    "json",
+    "recursive",
+    "object",
+    "notation"
+  ],
+  "author": "JongChan Choi",
+  "license": "Zlib",
+  "devDependencies": {
+    "another-jison-loader": "0.0.1",
+    "webpack": "^1.13.1"
+  }
+}
