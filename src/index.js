@@ -130,7 +130,7 @@ function idx(histogram, value) {
     }
     for (var i = 0; i < histogram.length; ++i) {
         if (is(histogram[i].v, value)) {
-            return String(i);
+            return i.toString(36);
         }
     }
     return '-1';
@@ -184,10 +184,9 @@ exports.stringify = function stringify(value) {
             }
             return b.c - a.c;
         });
-        for (var i = 0; i < histogram.length; ++i) {
-            histogram[i] = toStr(histogram, histogram[i].v);
-        }
-        return histogram.join(',');
+        return histogram.map(function (item) {
+            return toStr(histogram, item.v);
+        }).join(',');
     } else {
         return toStr(null, value);
     }

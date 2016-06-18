@@ -1,7 +1,7 @@
 %lex
 %%
 
-\d+(?=[,:\]\}$])    return 'INDEX'
+[0-9a-z]+(?=[,:\]\}$])  return 'INDEX'
 \-?(?:[1-9][0-9]+|[0-9])(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?   return 'NUMBER'
 \"(?:[^\"\\]|\\[\"\/\\bfnrt]|\\u[0-9a-fA-F]{4})*\"          return 'STRING'
 "t"                 return 'TRUE'
@@ -69,7 +69,7 @@ array_items
 
 array_item
     : keyword   {$$ = $1}
-    | INDEX     {$$ = parseInt($1)}
+    | INDEX     {$$ = parseInt($1, 36)}
     ;
 
 void
@@ -88,6 +88,6 @@ object_items
     ;
 
 object_item
-    : INDEX ":" INDEX       {$$ = {k: parseInt($1), v: parseInt($3)}}
-    | INDEX ":" keyword     {$$ = {k: parseInt($1), v: $3}}
+    : INDEX ":" INDEX       {$$ = {k: parseInt($1, 36), v: parseInt($3, 36)}}
+    | INDEX ":" keyword     {$$ = {k: parseInt($1, 36), v: $3}}
     ;
