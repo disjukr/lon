@@ -37,7 +37,7 @@ function kwd(arr) {
 
 exports.parse = function parse(text, classMap) {
     yy.bindClass = function (instance, className) {
-        var cls = classMap[className];
+        var cls = classMap && classMap[className];
         if (cls) {
             var newInstance = Object.create(cls.prototype);
             newInstance.ks = instance.ks;

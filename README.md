@@ -40,7 +40,7 @@ function A(a, b) {
 
 var a = new A(1, 2);
 
-var str = LON.stringify(a, {A: A});
+var str = LON.stringify(a, {A: A}); // 'A{1:2,3:4,5:0},"a",1,"b",2,"c"'
 var obj = LON.parse(str, {A: A});
 
 assert(obj instanceof A); // ok

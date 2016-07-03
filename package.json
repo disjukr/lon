@@ -1,6 +1,6 @@
 {
   "name": "lon",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "large object notation",
   "main": "dist/lon.js",
   "scripts": {
