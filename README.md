@@ -27,6 +27,28 @@ console.log(LON.stringify(a)); // '[1,u,n,4,5,,0,],{2:3},"foo","bar",0,-0'
 require('assert').deepStrictEqual(a, LON.parse(LON.stringify(a))); // ok
 ```
 
+### class instance
+```javascript
+var assert = require('assert');
+var LON = require('lon');
+
+function A(a, b) {
+    this.a = a;
+    this.b = b;
+    this.c = this;
+}
+
+var a = new A(1, 2);
+
+var str = LON.stringify(a, {A: A});
+var obj = LON.parse(str, {A: A});
+
+assert(obj instanceof A); // ok
+assert.equal(obj.a, 1); // ok
+assert.equal(obj.b, 2); // ok
+assert.deepStrictEqual(a, obj); // ok
+```
+
 
 ## license
 

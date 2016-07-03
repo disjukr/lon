@@ -35,7 +35,18 @@ function kwd(arr) {
     }
 }
 
-exports.parse = function parse(text) {
+exports.parse = function parse(text, classMap) {
+    yy.bindClass = function (instance, className) {
+        var cls = classMap[className];
+        if (cls) {
+            var newInstance = Object.create(cls.prototype);
+            newInstance.ks = instance.ks;
+            newInstance.vs = instance.vs;
+            return newInstance;
+        } else {
+            return instance;
+        }
+    };
     var mem = lonParser.parse(String(text));
     kwd(mem);
     for (var i = 0; i < mem.length; ++i) {
@@ -136,7 +147,7 @@ function idx(histogram, value) {
     return '-1';
 }
 
-function toStr(histogram, value) {
+function toStr(histogram, value, findClassName) {
     if (isKwd(value)) {
         return toKwd(value);
     }
@@ -157,6 +168,12 @@ function toStr(histogram, value) {
             for (var key in value) {
                 kvs.push(idx(histogram, key) + ':' + idx(histogram, value[key]));
             }
+            if (value.constructor !== Object) {
+                var className = findClassName(value.constructor);
+                if (className) {
+                    return className + '{' + kvs.join(',') + '}';
+                }
+            }
             return '{' + kvs.join(',') + '}';
         }
     case 'number':
@@ -171,7 +188,22 @@ function toStr(histogram, value) {
     }
 }
 
-exports.stringify = function stringify(value) {
+exports.stringify = function stringify(value, classMap) {
+    var denormMap = {
+        names: [],
+        classes: []
+    };
+    function findClassName(cls) {
+        var i = denormMap.classes.indexOf(cls);
+        if (i === -1) return null;
+        return denormMap.names[i];
+    }
+    if (classMap) {
+        for (var className in classMap) {
+            denormMap.names.push(className);
+            denormMap.classes.push(classMap[className]);
+        }
+    }
     if (value && typeof value === 'object') {
         var histogram = [];
         visit(histogram, value);
@@ -185,9 +217,9 @@ exports.stringify = function stringify(value) {
             return b.c - a.c;
         });
         return histogram.map(function (item) {
-            return toStr(histogram, item.v);
+            return toStr(histogram, item.v, findClassName);
         }).join(',');
     } else {
-        return toStr(null, value);
+        return toStr(null, value, findClassName);
     }
 };

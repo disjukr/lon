@@ -4,21 +4,22 @@
 [0-9a-z]+(?=[,:\]\}$])  return 'INDEX'
 \-?(?:[1-9][0-9]+|[0-9])(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?   return 'NUMBER'
 \"(?:[^\"\\]|\\[\"\/\\bfnrt]|\\u[0-9a-fA-F]{4})*\"          return 'STRING'
-"t"                 return 'TRUE'
-"f"                 return 'FALSE'
-"u"                 return 'UNDEFINED'
-"n"                 return 'NULL'
-"N"                 return 'NAN'
-"i"                 return 'INFINITY'
-"I"                 return '-INFINITY'
-","                 return ','
-":"                 return ':'
-"{"                 return '{'
-"}"                 return '}'
-"["                 return '['
-"]"                 return ']'
-<<EOF>>             return 'EOF'
-.                   return 'INVALID'
+"t"                     return 'TRUE'
+"f"                     return 'FALSE'
+"u"                     return 'UNDEFINED'
+"n"                     return 'NULL'
+"N"                     return 'NAN'
+"i"                     return 'INFINITY'
+"I"                     return '-INFINITY'
+[_a-zA-Z][_a-zA-Z0-9]*  return 'IDENTIFIER'
+","                     return ','
+":"                     return ':'
+"{"                     return '{'
+"}"                     return '}'
+"["                     return '['
+"]"                     return ']'
+<<EOF>>                 return 'EOF'
+.                       return 'INVALID'
 
 /lex
 %start root
@@ -37,6 +38,7 @@ value
     : keyword   {$$ = $1}
     | array     {$$ = $1}
     | object    {$$ = $1}
+    | instance  {$$ = $1}
     | INDEX     {$$ = parseInt($1)}
     | NUMBER    {$$ = parseFloat($1)}
     | STRING    {$$ = JSON.parse($1)}
@@ -50,6 +52,17 @@ keyword
     | NAN           {$$ = yy.N}
     | INFINITY      {$$ = yy.i}
     | "-INFINITY"   {$$ = yy.I}
+    ;
+
+name
+    : TRUE          {$$ = $1}
+    | FALSE         {$$ = $1}
+    | UNDEFINED     {$$ = $1}
+    | NULL          {$$ = $1}
+    | NAN           {$$ = $1}
+    | INFINITY      {$$ = $1}
+    | "-INFINITY"   {$$ = $1}
+    | IDENTIFIER    {$$ = $1}
     ;
 
 array
@@ -90,4 +103,8 @@ object_items
 object_item
     : INDEX ":" INDEX       {$$ = {k: parseInt($1, 36), v: parseInt($3, 36)}}
     | INDEX ":" keyword     {$$ = {k: parseInt($1, 36), v: $3}}
+    ;
+
+instance
+    : name object   {$$ = yy.bindClass($2, $1)}
     ;
